@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.sugarandspice.refmap.json",
+  "mixins": [
+
+  ],
+  "client": [
+
+  ],
+  "minVersion": "0.8"
+}
