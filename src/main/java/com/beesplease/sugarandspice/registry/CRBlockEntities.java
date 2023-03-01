@@ -7,5 +7,6 @@ public class CRBlockEntities {
     private static final CreateRegistrate REGISTRATE = SugarAndSpice.registrate();
 
     @SuppressWarnings("EmptyMethod")
-    public static void register() {}
+    public static void register() {
+    }
 }

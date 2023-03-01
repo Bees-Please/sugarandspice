@@ -15,50 +15,49 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(SugarAndSpice.MODID)
+import static com.beesplease.sugarandspice.BuildConfig.MODID;
+
+@Mod(MODID)
 public class SugarAndSpice {
-  public static final String MODID = "sugarandspice";
-  public static SugarAndSpice instance;
-  public static final Logger LOGGER = LogManager.getLogger(MODID);
-  public static final ModSetup setup = new ModSetup();
+    public static final Logger LOGGER = LogManager.getLogger(MODID);
+    public static final ModSetup setup = new ModSetup();
+    private static final CreateRegistrate REGISTRATE = CreateRegistrate.create(MODID);
+    public static SugarAndSpice instance;
+    public static IEventBus MOD_EVENT_BUS;
 
-  private static final CreateRegistrate REGISTRATE = CreateRegistrate.create(MODID);
+    public SugarAndSpice() {
+        instance = this;
 
-  public static IEventBus MOD_EVENT_BUS;
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
 
-  public SugarAndSpice() {
-  	instance = this;
+        MOD_EVENT_BUS = FMLJavaModLoadingContext.get().getModEventBus();
 
-  	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
-
-    MOD_EVENT_BUS = FMLJavaModLoadingContext.get().getModEventBus();
-
-    ModSetup.register();
+        ModSetup.register();
 
 
-    REGISTRATE.registerEventListeners(MOD_EVENT_BUS);
-    MOD_EVENT_BUS.addListener(this::setup);
-    MinecraftForge.EVENT_BUS.register(this);
+        REGISTRATE.registerEventListeners(MOD_EVENT_BUS);
+        MOD_EVENT_BUS.addListener(this::setup);
+        MinecraftForge.EVENT_BUS.register(this);
 
-    Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-client.toml"));
-    Config.loadConfig(Config.SERVER_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-common.toml"));
+        Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-client.toml"));
+        Config.loadConfig(Config.SERVER_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-common.toml"));
 
-    MOD_EVENT_BUS.addListener(SugarAndSpiceClient::clientSetup);
+        MOD_EVENT_BUS.addListener(SugarAndSpiceClient::clientSetup);
 
-    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> SugarAndSpiceClient::clientCtor);
-  }
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> SugarAndSpiceClient::clientCtor);
+    }
 
-  private void setup(final FMLCommonSetupEvent event) {
-    setup.init();
-  }
+    public static ResourceLocation asResource(String name) {
+        return new ResourceLocation(MODID, name);
+    }
 
-  public static ResourceLocation asResource(String name) {
-		return new ResourceLocation(MODID, name);
-	}
+    public static CreateRegistrate registrate() {
+        return REGISTRATE;
+    }
 
-  public static CreateRegistrate registrate() {
-    return REGISTRATE;
-  }
+    private void setup(final FMLCommonSetupEvent event) {
+        setup.init();
+    }
 
 }

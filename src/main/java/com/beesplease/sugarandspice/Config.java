@@ -17,6 +17,7 @@ public class Config {
 
     public static final ForgeConfigSpec SERVER_CONFIG;
     public static final ForgeConfigSpec CLIENT_CONFIG;
+
     static {
 
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
@@ -33,10 +34,10 @@ public class Config {
     }
 
     private static void setupGeneralCategory(ForgeConfigSpec.Builder builder) {
-           }
+    }
 
     private static void setupSemaphoreCategory(ForgeConfigSpec.Builder builder) {
-            }
+    }
 
     public static void loadConfig(ForgeConfigSpec spec, Path path) {
         final CommentedFileConfig configData = CommentedFileConfig.builder(path).sync().autosave().writingMode(WritingMode.REPLACE).build();

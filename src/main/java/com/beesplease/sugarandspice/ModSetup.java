@@ -5,13 +5,13 @@ import com.beesplease.sugarandspice.registry.CRBlocks;
 import com.beesplease.sugarandspice.registry.CRItems;
 
 public class ModSetup {
-  public void init() {
-  }
+    public static void register() {
+        CRItems.register();
+        CRBlockEntities.register();
+        CRBlocks.register();
+    }
 
-  public static void register() {
-    CRItems.register();
-    CRBlockEntities.register();
-    CRBlocks.register();
-  }
+    public void init() {
+    }
 }
 

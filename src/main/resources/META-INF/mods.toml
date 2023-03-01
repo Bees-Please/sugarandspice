@@ -1,31 +1,31 @@
-modLoader="javafml"
-loaderVersion="[31,)"
-issueTrackerURL="https://github.com/Bees-Please/sugarandspice/issues"
-license="TBD"
+modLoader = "javafml"
+loaderVersion = "[31,)"
+issueTrackerURL = "https://github.com/Bees-Please/sugarandspice/issues"
+license = "TBD"
 [[mods]]
-modId="sugarandspice"
-version="${file.jarVersion}"
-displayName="Sugar and Spice"
-displayURL="https://www.curseforge.com/minecraft/mc-mods/jei" #needs some sort of link so I just stuck JEI there for now
-logoFile="logo.png"
-authors="Bees Please, Grimmauld"
-description='''TBD'''
+modId = "sugarandspice"
+version = "${file.jarVersion}"
+displayName = "Sugar and Spice"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/jei" #needs some sort of link so I just stuck JEI there for now
+logoFile = "logo.png"
+authors = "Bees Please, Grimmauld"
+description = '''TBD'''
 
 [[dependencies.sugarandspice]] #optional
-modId="forge" #mandatory
-mandatory=true #mandatory
-versionRange="[38.0,)" #mandatory
-ordering="NONE"
-side="BOTH"
+modId = "forge" #mandatory
+mandatory = true #mandatory
+versionRange = "[38.0,)" #mandatory
+ordering = "NONE"
+side = "BOTH"
 [[dependencies.sugarandspice]]
-modId="minecraft"
-mandatory=true
-versionRange="[1.18, 1.19)"
-ordering="NONE"
-side="BOTH"
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18, 1.19)"
+ordering = "NONE"
+side = "BOTH"
 [[dependencies.sugarandspice]]
-modId="create"
-mandatory=true
-versionRange="[0.5.0.g,)"
-ordering="AFTER"
-side="BOTH"
+modId = "create"
+mandatory = true
+versionRange = "[0.5.0.g,)"
+ordering = "AFTER"
+side = "BOTH"

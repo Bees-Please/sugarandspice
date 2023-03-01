@@ -23,7 +23,9 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'idea'
+apply plugin: 'java'
 apply plugin: 'eclipse'
+apply from: 'https://raw.githubusercontent.com/LordGrimmauld/gitinfo-collect/master/build.gradle'
 
 def getGitHash = { ->
     def stdout = new ByteArrayOutputStream()
@@ -41,7 +43,7 @@ if (System.getenv("DEV") == "true") {
 if (System.getenv("CI") == "true") {
     version = "${minecraft_version}-nightly-${getGitHash()}"
 }
-group = 'com.github.spirolateral.railway' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = 'com.beesplease.sugarandspice' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "SugarAndSpice"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -102,6 +104,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    mavenCentral()
     maven {
         url "https://maven.tterrag.com/"
     }
@@ -126,7 +129,14 @@ repositories {
     }
 }
 
+configurations {
+    // configuration that holds jars to include in the jar
+    extraLibs
+}
+
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    testImplementation 'junit:junit:4.13.1'
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     implementation fg.deobf("com.simibubi.create:create-${create_minecraft_version}:${create_version}:all") { transitive = false }
@@ -137,8 +147,18 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}")
 
-
+    // mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    // testing
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+
+    testImplementation 'org.apache.logging.log4j:log4j-api:2.17.0'
+    testRuntimeOnly 'org.apache.logging.log4j:log4j-core:2.17.0'
+
+    // maths libraries
+    configurations.implementation.extendsFrom(configurations.extraLibs)
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -156,6 +176,18 @@ jar {
                 //"MixinConfigs": "mixins.${modid}.json"
         ])
     }
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+test {
+    testLogging.showStandardStreams = true
+    useJUnitPlatform()
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 //mixin {
@@ -186,25 +218,11 @@ build.dependsOn deobfJar
 
 jar.finalizedBy('reobfJar')
 
-def hasUnstaged = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'status', '--porcelain'
-        standardOutput = stdout
-    }
-    def result = stdout.toString().replaceAll("M gradlew", "").trim()
-    if (!result.isEmpty())
-        println("Found stageable results:\n${result}\n")
-    return !result.isEmpty()
-}
-
 buildConfig {
     buildConfigField 'String', 'MODID', "\"${modid}\""
     buildConfigField 'String', 'VERSION', "\"${project.version}\""
+    buildConfigField "String", "GITHASH", "\"${getGitInfo()}\""
     buildConfigField 'String', 'DISPLAY_NAME', "\"${display_name}\""
-    def gitstage = "\"${getGitHash()}" + (hasUnstaged() ? "-modified" : "") + "\""
-    println("Using git stage ${gitstage}")
-    buildConfigField "String", "GITHASH", gitstage
 
     version = project.version
     packageName = project.group

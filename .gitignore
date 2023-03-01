@@ -8,6 +8,7 @@
 !build.gradle
 !/gradle.properties
 !.gitattributes
+!.github
 !ASSETS_LICENSE.txt
 
 src/generated/resources/\.cache/
