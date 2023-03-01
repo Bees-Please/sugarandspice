@@ -159,6 +159,7 @@ dependencies {
 
     // maths libraries
     configurations.implementation.extendsFrom(configurations.extraLibs)
+    extraLibs 'org.apache.commons:commons-math3:3.6.1'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -223,6 +224,7 @@ buildConfig {
     buildConfigField 'String', 'VERSION', "\"${project.version}\""
     buildConfigField "String", "GITHASH", "\"${getGitInfo()}\""
     buildConfigField 'String', 'DISPLAY_NAME', "\"${display_name}\""
+    buildConfigField 'org.apache.logging.log4j.Logger', 'LOGGER', "org.apache.logging.log4j.LogManager.getLogger(MODID)"
 
     version = project.version
     packageName = project.group

@@ -12,14 +12,11 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import static com.beesplease.sugarandspice.BuildConfig.MODID;
 
 @Mod(MODID)
 public class SugarAndSpice {
-    public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final ModSetup setup = new ModSetup();
     private static final CreateRegistrate REGISTRATE = CreateRegistrate.create(MODID);
     public static SugarAndSpice instance;
