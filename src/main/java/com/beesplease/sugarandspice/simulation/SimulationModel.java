@@ -69,42 +69,48 @@ public class SimulationModel {
         RealVector I = new OpenMapRealVector(descriptors.getValuesI().stream().mapToDouble(Double::doubleValue).toArray());
         RealVector V = new OpenMapRealVector(descriptors.getValuesV().stream().mapToDouble(Double::doubleValue).toArray());
 
-        RealMatrix K_TL = MatrixHelper.matrixEmpty(descriptors.getIncidenceG()) ? null : descriptors.getIncidenceG().multiply(G).multiply(descriptors.getIncidenceG().transpose());
+        int nodePotentialCount = descriptors.nodes.size() - 1;
+        int inductorBranchCurrentCount = descriptors.getValuesL().size();
+        int dim = nodePotentialCount + inductorBranchCurrentCount + V.getDimension();
 
 
         // K matrix (linear terms)
-        RealMatrix K = MatrixHelper.vstack(MatrixHelper.hstack(K_TL, descriptors.getIncidenceL(), descriptors.getIncidenceV()),
-                MatrixHelper.matrixEmpty(descriptors.getIncidenceL()) ? null : descriptors.getIncidenceL().transpose().scalarMultiply(-1),
-                MatrixHelper.matrixEmpty(descriptors.getIncidenceV()) ? null : descriptors.getIncidenceV().transpose().scalarMultiply(-1));
+        RealMatrix K = new OpenMapRealMatrix(dim, dim);
+        if (!MatrixHelper.matrixEmpty(descriptors.getIncidenceG())) {
+            MatrixHelper.setSparseSubMatrix(K, descriptors.getIncidenceG().multiply(G).multiply(descriptors.getIncidenceG().transpose()), 0, 0);
+        }
 
-        assert K.getRowDimension() == K.getColumnDimension(); // K needs to be square, I think?? If not, this will at least scream.
+        if (!MatrixHelper.matrixEmpty(descriptors.getIncidenceL())) {
+            MatrixHelper.setSparseSubMatrix(K, descriptors.getIncidenceL(), 0, nodePotentialCount);
+            MatrixHelper.setSparseSubMatrix(K, descriptors.getIncidenceL().transpose().scalarMultiply(-1), nodePotentialCount, 0);
+        }
+
+        if (!MatrixHelper.matrixEmpty(descriptors.getIncidenceV())) {
+            MatrixHelper.setSparseSubMatrix(K, descriptors.getIncidenceV(), 0, nodePotentialCount + inductorBranchCurrentCount);
+            MatrixHelper.setSparseSubMatrix(K, descriptors.getIncidenceV().transpose(), nodePotentialCount + inductorBranchCurrentCount, 0);
+        }
 
 
         // M matrix (derivatives)
-        RealMatrix M = new OpenMapRealMatrix(K.getRowDimension(), K.getColumnDimension());
-        int capRows = 0;
-        int capCols = 0;
-
+        RealMatrix M = new OpenMapRealMatrix(dim, dim);
         if (!MatrixHelper.matrixEmpty(descriptors.getIncidenceC())) {
             RealMatrix capacityMatrix = descriptors.getIncidenceC().multiply(C).multiply(descriptors.getIncidenceC().transpose());
-            assert capacityMatrix.getRowDimension() == capacityMatrix.getColumnDimension(); // same as for K
+            assert capacityMatrix.isSquare(); // same as for K
             MatrixHelper.setSparseSubMatrix(M, capacityMatrix, 0, 0);
-            capRows = capacityMatrix.getRowDimension();
-            capCols = capacityMatrix.getColumnDimension();
         }
 
-        MatrixHelper.setSparseSubMatrix(M, L, capRows, capCols);
+        MatrixHelper.setSparseSubMatrix(M, L, nodePotentialCount, nodePotentialCount);
 
 
         // right side
-        RealVector r = new OpenMapRealVector(K.getColumnDimension());
-        int currentSourceDim = 0;
+        RealVector r = new OpenMapRealVector(dim);
         if (!MatrixHelper.matrixEmpty(descriptors.getIncidenceI())) {
-            RealVector currentSourceInfo = descriptors.getIncidenceI().operate(I);
-            r.setSubVector(0, currentSourceInfo);
-            currentSourceDim = currentSourceInfo.getDimension();
+            r.setSubVector(0, descriptors.getIncidenceI().operate(I));
         }
-        r.setSubVector(r.getDimension() - (currentSourceDim + V.getDimension()), V);
+
+        if (V.getDimension() > 0) {
+            r.setSubVector(nodePotentialCount + inductorBranchCurrentCount, V);
+        }
 
         return Triple.of(M, K, r);
     }
