@@ -184,6 +184,7 @@ jar {
 
 test {
     testLogging.showStandardStreams = true
+    testClassesDirs = sourceSets.test.output.classesDirs
     useJUnitPlatform()
 }
 

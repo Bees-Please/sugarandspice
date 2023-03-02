@@ -29,13 +29,6 @@ public class SimulationDescriptors {
 
     public SimulationDescriptors(BiMap<Integer, Integer> nodes) {
         this.nodes = nodes;
-
-        incidenceG = new OpenMapRealMatrix(nodes.size() - 1, 0);
-        incidenceL = new OpenMapRealMatrix(nodes.size() - 1, 0);
-        incidenceC = new OpenMapRealMatrix(nodes.size() - 1, 0);
-        incidenceV = new OpenMapRealMatrix(nodes.size() - 1, 0);
-        incidenceI = new OpenMapRealMatrix(nodes.size() - 1, 0);
-
         updateVectorMask();
     }
 
@@ -45,13 +38,13 @@ public class SimulationDescriptors {
     }
 
     private void updateVectorMask() {
-        vectorMaskRows = new int[nodes.size()];
+        vectorMaskRows = new int[nodes.size() - 1];
         int entry = 0;
-        for (int i = 0; entry < nodes.size() - 1; i++) {
+        for (int i = 0; i < nodes.size(); i++) {
             if (i != groundNode) {
                 vectorMaskRows[entry] = i;
+                entry++;
             }
-            entry++;
         }
     }
 
@@ -99,7 +92,9 @@ public class SimulationDescriptors {
         RealMatrix branchVector = new OpenMapRealMatrix(nodes.size(), 1);
         branchVector.setEntry(nodes.get(node1), 0, 1);
         branchVector.setEntry(nodes.get(node2), 0, -1);
-        return MatrixHelper.hstack(base.get(), branchVector.getSubMatrix(vectorMaskRows, vectorMaskColumns));
+        RealMatrix baseMatrix = base.get();
+        RealMatrix addition = branchVector.getSubMatrix(vectorMaskRows, vectorMaskColumns);
+        return baseMatrix == null ? addition : MatrixHelper.hstack(baseMatrix, addition);
     }
 
     public void addResistor(double value, int node1, int node2) {

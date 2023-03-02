@@ -5,27 +5,19 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.BeforeClass;
 import org.junit.jupiter.api.Test;
 
-import static com.beesplease.sugarandspice.BuildConfig.LOGGER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TestTests {
+public class TestMatrixOperations {
 
     @BeforeClass
     public static void setupLogging() {
         try (var ignored = Configurator.initialize(null, "log4j2-test.xml")) {
-            LOGGER.debug("testing logger configured");
         }
     }
 
     @Test
-    void firstLittleTest() {
-        LOGGER.info("Running unit tests...");
-        assertEquals(1, 1);
-    }
-
-    @Test
-    void testMatrixHelper() {
+    public void testMatrixHelper() {
         RealMatrix a = new OpenMapRealMatrix(3, 3);
         a.setEntry(0, 0, 1.0);
         a.setEntry(0, 2, 2.0);

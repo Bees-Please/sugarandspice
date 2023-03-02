@@ -9,7 +9,7 @@ public class Netlist {
     private List<Component> netList = new LinkedList<>();
 
     @Nullable
-    public SimulationModel buildSystemMatrices(double simulationTimeStep) {
+    public SimulationModel buildSimulationModel(double simulationTimeStep) {
         Map<Integer, Integer> nodeConnections = new HashMap<>();
         SimulationModel model = new SimulationModel(simulationTimeStep);
         netList.forEach(c -> Arrays.stream(c.nodes).forEach(n -> nodeConnections.put(n, nodeConnections.getOrDefault(n, 0) + 1)));

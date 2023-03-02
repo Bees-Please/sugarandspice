@@ -4,6 +4,9 @@ import com.beesplease.sugarandspice.BuildConfig;
 import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealMatrixPreservingVisitor;
+import org.apache.commons.math3.linear.RealVector;
+
+import java.util.Arrays;
 
 public class MatrixHelper {
     private MatrixHelper() {
@@ -14,6 +17,8 @@ public class MatrixHelper {
         int dimPrimary = 0;
         int dimOther = 0;
         for (RealMatrix m : matrices) {
+            if (matrixEmpty(m))
+                continue;
             dimPrimary += m.getRowDimension();
             dimOther = Math.max(dimOther, m.getColumnDimension());
         }
@@ -22,6 +27,8 @@ public class MatrixHelper {
 
         int offset = 0;
         for (RealMatrix m : matrices) {
+            if (matrixEmpty(m))
+                continue;
             setSparseSubMatrix(stackedMatrix, m, offset, 0);
             offset += m.getRowDimension();
         }
@@ -32,6 +39,8 @@ public class MatrixHelper {
         int dimPrimary = 0;
         int dimOther = 0;
         for (RealMatrix m : matrices) {
+            if (matrixEmpty(m))
+                continue;
             dimPrimary += m.getColumnDimension();
             dimOther = Math.max(dimOther, m.getRowDimension());
         }
@@ -40,13 +49,21 @@ public class MatrixHelper {
 
         int offset = 0;
         for (RealMatrix m : matrices) {
+            if (matrixEmpty(m))
+                continue;
             setSparseSubMatrix(stackedMatrix, m, 0, offset);
             offset += m.getColumnDimension();
         }
         return stackedMatrix;
     }
 
+    public static boolean matrixEmpty(RealMatrix m) {
+        return m == null || m.getColumnDimension() == 0 || m.getRowDimension() == 0;
+    }
+
     public static void setSparseSubMatrix(RealMatrix base, RealMatrix stamp, int rowOffset, int columnOffset) {
+        if (matrixEmpty(stamp) || matrixEmpty(base))
+            return;
         if (stamp instanceof OpenMapRealMatrix sparseStamp) {
             sparseStamp.walkInOptimizedOrder(new RealMatrixPreservingVisitor() {
                 @Override
@@ -78,5 +95,9 @@ public class MatrixHelper {
             }
             BuildConfig.LOGGER.info(builder.toString());
         }
+    }
+
+    public static void printVector(RealVector vector) {
+        BuildConfig.LOGGER.info(Arrays.toString(vector.toArray()));
     }
 }
