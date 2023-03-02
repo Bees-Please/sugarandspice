@@ -44,6 +44,11 @@ public class SimpleEulerSolver extends ODESolver {
         testSystemValidity();
     }
 
+    public void updateRightSide(RealVector rightSide) {
+        r = rightSide != null ? rightSide : r;
+        testSystemValidity();
+    }
+
     @Override
     public RealVector getLatestSolution() {
         return lastSolution;

@@ -1,10 +1,10 @@
 package com.beesplease.sugarandspice.simulation.components;
 
 import javax.annotation.Nonnull;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public abstract class ValuedComponent<T> extends Component {
-    private Supplier<T> valueSupplier;
+    private Function<Double, T> valueFunction;
 
     // caching
     private double cachedValueAt = -1;
@@ -13,18 +13,13 @@ public abstract class ValuedComponent<T> extends Component {
     // used for constant values
     public ValuedComponent(T value, int... nodes) {
         super(nodes);
-        this.valueSupplier = () -> value;
+        this.valueFunction = t -> value;
     }
 
     // used for controlled values
-    public ValuedComponent(Supplier<T> value, int... nodes) {
+    public ValuedComponent(Function<Double, T> value, int... nodes) {
         super(nodes);
-        this.valueSupplier = value;
-    }
-
-    // Warning: Not lazy! Use cautiously! The Supplier might be expensive to run!
-    public T getValue() {
-        return valueSupplier.get();
+        this.valueFunction = value;
     }
 
     // cached value gathering
@@ -32,7 +27,7 @@ public abstract class ValuedComponent<T> extends Component {
     public T getValue(double simulationTimeStep) {
         if (simulationTimeStep > cachedValueAt) {
             cachedValueAt = simulationTimeStep;
-            cachedValue = getValue();
+            cachedValue = valueFunction.apply(simulationTimeStep);
         }
         if (cachedValue == null) {
             throw new NullPointerException("Caching exception: component has null value cached");
@@ -40,7 +35,7 @@ public abstract class ValuedComponent<T> extends Component {
         return cachedValue;
     }
 
-    public void setValueSupplier(Supplier<T> valueSupplier) {
-        this.valueSupplier = valueSupplier;
+    public void setValueFunction(Function<Double, T> valueFunction) {
+        this.valueFunction = valueFunction;
     }
 }

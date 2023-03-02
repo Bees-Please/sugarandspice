@@ -3,7 +3,7 @@ package com.beesplease.sugarandspice.simulation.components.basic;
 import com.beesplease.sugarandspice.simulation.SimulationModel;
 import com.beesplease.sugarandspice.simulation.components.ValuedComponent;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class CurrentSource extends ValuedComponent<Double> {
 
@@ -13,7 +13,7 @@ public class CurrentSource extends ValuedComponent<Double> {
     }
 
     // variable resistance
-    public CurrentSource(Supplier<Double> value, int... nodes) {
+    public CurrentSource(Function<Double, Double> value, int... nodes) {
         super(value, nodes);
     }
 
